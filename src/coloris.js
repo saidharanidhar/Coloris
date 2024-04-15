@@ -9,7 +9,7 @@
   const currentColor = { r: 0, g: 0, b: 0, h: 0, s: 0, v: 0, a: 1 };
   let container, picker, colorArea, colorMarker, colorPreview, colorValue, clearButton, closeButton,
       hueSlider, hueMarker, alphaSlider, alphaMarker, currentEl, currentFormat, oldColor, keyboardNav,
-      colorAreaDims = {};
+      colorAreaDims, selectedSwatch, publishStateTimeout = {};
 
   // Default settings
   const settings = {
@@ -701,6 +701,25 @@
   }
 
   /**
+   * Publishes the current state
+  */
+  function publishState() {
+    if (window.colorisCallback) {
+      clearTimeout(publishStateTimeout);
+
+      const swatchValues = Array.from(document.querySelectorAll('.clr-swatches button')).map(b => RGBAToHex(strToRGBA(b.style.color)));
+      const data = {
+        currentEl: currentEl,
+        swatchValues: swatchValues,
+        currentElValue: colorValue.value,
+      }
+
+      publishStateTimeout = setTimeout(() => { window.colorisCallback("COLORIS_PUBLISH", data) }, 500);
+
+    }
+  }
+
+  /**
    * Update the color picker's input field and preview thumb.
    * @param {Object} rgba Red, green, blue and alpha values.
    * @param {Object} [hsva] Hue, saturation, value and alpha values.
@@ -752,6 +771,7 @@
 
     // Select the current format in the format switcher
     document.querySelector(`.clr-format [value="${format}"]`).checked = true;
+    publishState();
   }
 
   /**
@@ -998,6 +1018,7 @@
     '</div>'+
     '<div id="clr-swatches" class="clr-swatches"></div>'+
     `<button type="button" id="clr-clear" class="clr-clear" aria-label="${settings.a11y.clear}">${settings.clearLabel}</button>`+
+    `<button type="button" id="clr-set-swatch" style="display: block; visibility: hidden" class="clr-clear" aria-label="set swatch">Set</button>`+
     '<div id="clr-color-preview" class="clr-preview">'+
       `<button type="button" id="clr-close" class="clr-close" aria-label="${settings.a11y.close}">${settings.closeLabel}</button>`+
     '</div>'+
@@ -1018,10 +1039,36 @@
     hueMarker = getEl('clr-hue-marker');
     alphaSlider = getEl('clr-alpha-slider');
     alphaMarker = getEl('clr-alpha-marker');
+    setSwatch = getEl('clr-set-swatch');
 
     // Bind the picker to the default selector
     bindFields(settings.el);
     wrapFields(settings.el);
+
+    function clearSwatchSelection() {
+        const buttons = document.querySelectorAll('.clr-swatches button');
+        buttons.forEach(button => {
+            if (button.style.boxShadow) {
+              button.style.boxShadow = null;
+            }
+        });
+        selectedSwatch = null;
+        setSwatch.style.visibility = 'hidden';
+    }
+
+    function setSwatchSelection(swatch) {
+        clearSwatchSelection();
+        selectedSwatch = swatch;
+        const [firstColor, secondColor] = settings.themeMode === "dark" ? ["black", "white"] : ["white", "black"];
+        swatch.style.boxShadow = `${firstColor} 0px 0px 0px 2px, ${secondColor} 0px 0px 0px 4px`;
+        setSwatch.style.visibility = 'visible';
+    }
+
+    addListener(setSwatch, 'click', event => {
+      selectedSwatch.style.color = currentEl.value;
+      selectedSwatch.textContent = currentEl.value;
+      publishState();
+    });
 
     addListener(picker, 'mousedown', event => {
       picker.classList.remove('clr-keyboard-nav');
@@ -1074,6 +1121,8 @@
     });
 
     addListener(picker, 'click', '.clr-swatches button', event => {
+      setSwatchSelection(event.target);
+
       setColorFromStr(event.target.textContent);
       pickColor();
 
@@ -1154,6 +1203,8 @@
     addListener(colorArea, 'click', moveMarker);
     addListener(hueSlider, 'input', setHue);
     addListener(alphaSlider, 'input', setAlpha);
+
+    publishState();
   }
 
   /**
