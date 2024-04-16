@@ -771,6 +771,9 @@
 
     // Select the current format in the format switcher
     document.querySelector(`.clr-format [value="${format}"]`).checked = true;
+    if (!settings["setSwatchButton"]) {
+      clearSwatchSelection();
+    }
     publishState();
   }
 
@@ -981,6 +984,26 @@
     }
   }
 
+  function clearSwatchSelection() {
+    const buttons = document.querySelectorAll('.clr-swatches button');
+    buttons.forEach(button => {
+        if (button.style.boxShadow) {
+          button.style.boxShadow = null;
+        }
+    });
+    selectedSwatch = null;
+    setSwatch.style.visibility = 'hidden';
+}
+
+function setSwatchSelection(swatch) {
+    clearSwatchSelection();
+    selectedSwatch = swatch;
+    const [firstColor, secondColor] = settings.themeMode === "dark" ? ["black", "white"] : ["white", "black"];
+    swatch.style.boxShadow = `${firstColor} 0px 0px 0px 2px, ${secondColor} 0px 0px 0px 4px`;
+    setSwatch.style.visibility = settings['setSwatchButton'] && 'visible';
+}
+
+
   /**
    * Init the color picker.
    */
@@ -1045,25 +1068,6 @@
     bindFields(settings.el);
     wrapFields(settings.el);
 
-    function clearSwatchSelection() {
-        const buttons = document.querySelectorAll('.clr-swatches button');
-        buttons.forEach(button => {
-            if (button.style.boxShadow) {
-              button.style.boxShadow = null;
-            }
-        });
-        selectedSwatch = null;
-        setSwatch.style.visibility = 'hidden';
-    }
-
-    function setSwatchSelection(swatch) {
-        clearSwatchSelection();
-        selectedSwatch = swatch;
-        const [firstColor, secondColor] = settings.themeMode === "dark" ? ["black", "white"] : ["white", "black"];
-        swatch.style.boxShadow = `${firstColor} 0px 0px 0px 2px, ${secondColor} 0px 0px 0px 4px`;
-        setSwatch.style.visibility = 'visible';
-    }
-
     addListener(setSwatch, 'click', event => {
       selectedSwatch.style.color = currentEl.value;
       selectedSwatch.textContent = currentEl.value;
@@ -1121,14 +1125,13 @@
     });
 
     addListener(picker, 'click', '.clr-swatches button', event => {
-      setSwatchSelection(event.target);
-
       setColorFromStr(event.target.textContent);
       pickColor();
 
       if (settings.swatchesOnly) {
         closePicker();
       }
+      setSwatchSelection(event.target);
     });
 
     addListener(document, 'mouseup', event => {
