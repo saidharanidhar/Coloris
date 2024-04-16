@@ -1287,8 +1287,6 @@ function setSwatchSelection(swatch) {
       removeInstance: removeVirtualInstance,
       updatePosition: updatePickerPosition,
       ready: DOMReady,
-      strToRGBA,
-      RGBAToHex,
     };
 
     function Coloris(options) {
@@ -1308,6 +1306,9 @@ function setSwatchSelection(swatch) {
         DOMReady(methods[key], args);
       };
     }
+
+    Coloris.strToRGBA = strToRGBA;
+    Coloris.RGBAToHex = RGBAToHex;
 
     return Coloris;
   })();

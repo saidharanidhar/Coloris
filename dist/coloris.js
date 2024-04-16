@@ -1286,9 +1286,7 @@
       setInstance: setVirtualInstance,
       removeInstance: removeVirtualInstance,
       updatePosition: updatePickerPosition,
-      ready: DOMReady,
-      strToRGBA: strToRGBA,
-      RGBAToHex: RGBAToHex };
+      ready: DOMReady };
 
 
     function Coloris(options) {
@@ -1308,6 +1306,9 @@
         DOMReady(methods[key], args);
       };};for (var key in methods) {_loop2(key);
     }
+
+    Coloris.strToRGBA = strToRGBA;
+    Coloris.RGBAToHex = RGBAToHex;
 
     return Coloris;
   }();
