@@ -1286,7 +1286,9 @@
       setInstance: setVirtualInstance,
       removeInstance: removeVirtualInstance,
       updatePosition: updatePickerPosition,
-      ready: DOMReady };
+      ready: DOMReady,
+      strToRGBA: strToRGBA,
+      RGBAToHex: RGBAToHex };
 
 
     function Coloris(options) {
@@ -1309,6 +1311,8 @@
 
     return Coloris;
   }();
+
+
 
   // Init the color picker when the DOM is ready
   DOMReady(init);

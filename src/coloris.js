@@ -1286,7 +1286,9 @@ function setSwatchSelection(swatch) {
       setInstance: setVirtualInstance,
       removeInstance: removeVirtualInstance,
       updatePosition: updatePickerPosition,
-      ready: DOMReady
+      ready: DOMReady,
+      strToRGBA,
+      RGBAToHex,
     };
 
     function Coloris(options) {
@@ -1309,6 +1311,8 @@ function setSwatchSelection(swatch) {
 
     return Coloris;
   })();
+
+
 
   // Init the color picker when the DOM is ready
   DOMReady(init);
