@@ -1061,7 +1061,7 @@
       selectedSwatch = swatch;
       var _ref = settings.themeMode === "dark" ? ["black", "white"] : ["white", "black"],firstColor = _ref[0],secondColor = _ref[1];
       swatch.style.boxShadow = firstColor + " 0px 0px 0px 2px, " + secondColor + " 0px 0px 0px 4px";
-      setSwatch.style.visibility = 'visible';
+      setSwatch.style.visibility = settings.setSwatchButton ? 'visible' : 'hidden';
     }
 
     addListener(setSwatch, 'click', function (event) {
