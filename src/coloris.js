@@ -704,7 +704,7 @@
    * Publishes the current state
   */
   function publishState() {
-    if (window.colorisCallback) {
+    if (window.colorisCallback && currentEl) {
       clearTimeout(publishStateTimeout);
 
       const swatchValues = Array.from(document.querySelectorAll('.clr-swatches button')).map(b => RGBAToHex(strToRGBA(b.style.color)));
