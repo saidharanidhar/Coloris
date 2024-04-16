@@ -714,7 +714,7 @@
         currentElValue: colorValue.value,
       }
 
-      publishStateTimeout = setTimeout(() => { window.colorisCallback && window.colorisCallback("COLORIS_PUBLISH", data) }, 500);
+      publishStateTimeout = setTimeout(() => { window.colorisCallback("COLORIS_PUBLISH", data) }, 500);
     }
   }
 
